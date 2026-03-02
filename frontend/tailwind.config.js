@@ -7,11 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#0f172a",
-        foreground: "#f8fafc",
+        background: "#f0f9ff", // Sky 50
+        foreground: "#0c4a6e", // Sky 900
         primary: {
-          DEFAULT: "#c084fc",
-          hover: "#d8b4fe",
+          DEFAULT: "#0ea5e9", // Sky 500
+          hover: "#38bdf8", // Sky 400
         },
         secondary: {
           DEFAULT: "#3b82f6",

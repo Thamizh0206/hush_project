@@ -156,24 +156,24 @@ export const QuizSection = ({ questions, topic, user_id, onHome }) => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
-                        className="text-5xl font-black mb-6 bg-gradient-to-br from-white to-slate-400 bg-clip-text text-transparent"
+                        className="text-5xl font-black mb-6 bg-gradient-to-br from-primary to-indigo-600 bg-clip-text text-transparent"
                     >
                         Your Score
                     </motion.h2>
 
                     <div className="flex items-center justify-center gap-6 mb-10">
-                        <div className="flex flex-col items-center p-6 rounded-3xl bg-white/5 border border-white/10 w-40">
-                            <span className="text-4xl font-bold text-white mb-1">{score}</span>
-                            <span className="text-xs text-slate-500 uppercase font-bold tracking-widest">Correct</span>
+                        <div className="flex flex-col items-center p-6 rounded-3xl bg-sky-500/10 border border-sky-500/20 w-40">
+                            <span className="text-4xl font-bold text-foreground mb-1">{score}</span>
+                            <span className="text-xs text-sky-600 uppercase font-bold tracking-widest">Correct</span>
                         </div>
-                        <div className="flex flex-col items-center p-6 rounded-3xl bg-white/5 border border-white/10 w-40">
-                            <span className="text-4xl font-bold text-white mb-1">{totalQuestions}</span>
-                            <span className="text-xs text-slate-500 uppercase font-bold tracking-widest">Total</span>
+                        <div className="flex flex-col items-center p-6 rounded-3xl bg-sky-500/10 border border-sky-500/20 w-40">
+                            <span className="text-4xl font-bold text-foreground mb-1">{totalQuestions}</span>
+                            <span className="text-xs text-sky-600 uppercase font-bold tracking-widest">Total</span>
                         </div>
                     </div>
 
                     <div className="mb-12 space-y-4">
-                        <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden border border-white/10 p-1">
+                        <div className="h-4 w-full bg-sky-500/10 rounded-full overflow-hidden border border-sky-500/20 p-1">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${percentage}%` }}
@@ -183,22 +183,22 @@ export const QuizSection = ({ questions, topic, user_id, onHome }) => {
                         </div>
                         <div className="flex justify-between items-center px-1">
                             <span className={cn("text-xl font-bold", rankColor)}>{rank}</span>
-                            <span className="text-2xl font-black text-white/90">{percentage}%</span>
+                            <span className="text-2xl font-black text-foreground/90">{percentage}%</span>
                         </div>
-                        <p className="text-slate-300 italic text-lg">{message}</p>
+                        <p className="text-sky-700 italic text-lg">{message}</p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
                             onClick={resetQuiz}
-                            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold transition-all flex items-center justify-center gap-2 group"
+                            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/60 border border-sky-200 hover:bg-white text-primary font-bold transition-all shadow-sm flex items-center justify-center gap-2 group"
                         >
                             <RotateCcw className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
                             Retake Quiz
                         </button>
                         <button
                             onClick={onHome || (() => window.location.reload())}
-                            className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:shadow-[0_0_30px_rgba(56,189,248,0.4)] text-white font-bold transition-all flex items-center justify-center gap-2"
+                            className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:shadow-[0_10px_25px_rgba(14,165,233,0.3)] text-white font-bold transition-all flex items-center justify-center gap-2"
                         >
                             <Layout className="w-5 h-5" />
                             Return Home
@@ -220,12 +220,12 @@ export const QuizSection = ({ questions, topic, user_id, onHome }) => {
                     <div className="w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center border border-sky-500/30">
                         <Target className="w-5 h-5 text-sky-400" />
                     </div>
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-100 to-indigo-100 bg-clip-text text-transparent">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-900 to-indigo-900 bg-clip-text text-transparent">
                         Knowledge Check
                     </h2>
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="text-indigo-300 font-medium px-4 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                    <span className="text-sky-700 font-medium px-4 py-1 rounded-full bg-sky-500/10 border border-sky-500/20">
                         Score: {score} / {totalQuestions}
                     </span>
                 </div>
@@ -254,7 +254,7 @@ export const QuizSection = ({ questions, topic, user_id, onHome }) => {
                             <span className="text-primary font-bold text-3xl leading-none">
                                 {currentIndex + 1}.
                             </span>
-                            <h3 className="text-xl font-medium text-slate-100 leading-snug">
+                            <h3 className="text-xl font-medium text-slate-800 leading-snug">
                                 {currentQuestion.question}
                             </h3>
                         </div>
@@ -284,12 +284,12 @@ export const QuizSection = ({ questions, topic, user_id, onHome }) => {
                                         className={cn(
                                             "group p-5 text-left rounded-2xl border transition-all duration-300 relative overflow-hidden",
                                             !hasAnswered
-                                                ? "bg-white/5 border-white/10 hover:border-primary/40 hover:bg-primary/5 translate-y-0 active:scale-95"
+                                                ? "bg-white/40 border-sky-100 hover:border-primary/40 hover:bg-white translate-y-0 active:scale-95 shadow-sm"
                                                 : showAsWrong
-                                                    ? "bg-danger/10 border-danger/40 shadow-[0_0_20px_rgba(239,68,68,0.15)]"
+                                                    ? "bg-danger/10 border-danger/40 shadow-[0_0_20px_rgba(239,68,68,0.1)]"
                                                     : showAsCorrect
-                                                        ? "bg-accent/10 border-accent/40 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
-                                                        : "bg-white/2 border-white/5 opacity-50 grayscale"
+                                                        ? "bg-accent/10 border-accent/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                                                        : "bg-black/2 border-black/5 opacity-50 grayscale"
                                         )}
                                     >
                                         <div className="flex items-center justify-between pointer-events-none">
@@ -321,7 +321,7 @@ export const QuizSection = ({ questions, topic, user_id, onHome }) => {
                                         {feedback[currentIndex].isCorrect ? "Brilliant!" : "Not quite right"}
                                     </span>
                                 </div>
-                                <p className="text-slate-200 leading-relaxed font-light italic">
+                                <p className="text-slate-700 leading-relaxed font-light italic">
                                     {feedback[currentIndex].explanation}
                                 </p>
                                 {feedback[currentIndex].followup && (
