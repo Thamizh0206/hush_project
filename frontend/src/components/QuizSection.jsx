@@ -107,15 +107,15 @@ export const QuizSection = ({ questions, topic, user_id, onHome }) => {
         if (percentage >= 90) {
             rank = "Master Mind";
             message = "Unbelievable! You're a true subject expert.";
-            rankColor = "text-yellow-400";
+            rankColor = "text-amber-600";
         } else if (percentage >= 70) {
             rank = "Knowledge Seeker";
             message = "Great work! You have a solid grasp of the material.";
-            rankColor = "text-emerald-400";
+            rankColor = "text-emerald-600";
         } else if (percentage >= 50) {
             rank = "Rising Star";
             message = "Good effort! A bit more study and you'll be an expert.";
-            rankColor = "text-indigo-400";
+            rankColor = "text-blue-600";
         }
 
         return (
@@ -282,14 +282,14 @@ export const QuizSection = ({ questions, topic, user_id, onHome }) => {
                                             handleSelectOption(actualLetter);
                                         }}
                                         className={cn(
-                                            "group p-5 text-left rounded-2xl border transition-all duration-300 relative overflow-hidden",
+                                            "group p-5 text-left rounded-2xl border transition-all duration-500 relative overflow-hidden",
                                             !hasAnswered
-                                                ? "bg-white/40 border-sky-100 hover:border-primary/40 hover:bg-white translate-y-0 active:scale-95 shadow-sm"
+                                                ? "bg-white/40 border-sky-100 hover:border-primary/40 hover:bg-white hover:shadow-md translate-y-0 active:scale-95 shadow-sm"
                                                 : showAsWrong
-                                                    ? "bg-danger/10 border-danger/40 shadow-[0_0_20px_rgba(239,68,68,0.1)]"
+                                                    ? "bg-red-50 border-red-200 shadow-[0_4px_15px_rgba(239,68,68,0.1)] text-red-900"
                                                     : showAsCorrect
-                                                        ? "bg-accent/10 border-accent/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
-                                                        : "bg-black/2 border-black/5 opacity-50 grayscale"
+                                                        ? "bg-emerald-50 border-emerald-200 shadow-[0_4px_15px_rgba(16,185,129,0.1)] text-emerald-900"
+                                                        : "bg-black/2 border-black/5 opacity-40 grayscale"
                                         )}
                                     >
                                         <div className="flex items-center justify-between pointer-events-none">
