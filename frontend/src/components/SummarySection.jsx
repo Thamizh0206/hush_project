@@ -6,9 +6,9 @@ export const SummarySection = ({ summary }) => {
         .split('\n')
         .filter(line => line.trim() !== '')
         .map((line, i) => (
-            <p key={i} className="mb-4 text-slate-300 leading-relaxed font-light text-lg">
+            <p key={i} className="mb-4 text-slate-800 leading-relaxed font-light text-lg">
                 {line.split('**').map((part, index) =>
-                    index % 2 === 1 ? <strong key={index} className="text-white font-semibold">{part}</strong> : part
+                    index % 2 === 1 ? <strong key={index} className="text-sky-900 font-bold">{part}</strong> : part
                 )}
             </p>
         ));
@@ -23,7 +23,7 @@ export const SummarySection = ({ summary }) => {
                 <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/30">
                     <FileText className="w-5 h-5 text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-fuchsia-100 to-sky-100 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-sky-900 to-indigo-900 bg-clip-text text-transparent">
                     Summary
                 </h2>
             </div>

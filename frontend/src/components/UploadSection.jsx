@@ -71,11 +71,11 @@ export const UploadSection = ({ onUpload }) => {
                             exit={{ opacity: 0 }}
                             className="flex flex-col items-center"
                         >
-                            <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 group-hover:border-primary/40 transition-colors">
-                                <Upload className="w-8 h-8 text-slate-400 group-hover:text-primary transition-colors" />
+                            <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-2xl bg-sky-500/10 border border-sky-500/20 group-hover:border-primary/40 transition-colors">
+                                <Upload className="w-8 h-8 text-sky-500 group-hover:text-primary transition-colors" />
                             </div>
-                            <h2 className="text-2xl font-semibold mb-2">Upload your notes</h2>
-                            <p className="text-slate-400">Drag & drop your text or PDF file here, or click to browse.</p>
+                            <h2 className="text-2xl font-semibold mb-2 text-sky-900">Upload your notes</h2>
+                            <p className="text-sky-700">Drag & drop your text or PDF file here, or click to browse.</p>
                         </motion.div>
                     ) : (
                         <motion.div
@@ -87,8 +87,8 @@ export const UploadSection = ({ onUpload }) => {
                             <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-2xl bg-accent/20 border border-accent/40 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
                                 <FileText className="w-8 h-8 text-accent-foreground" />
                             </div>
-                            <h2 className="text-xl font-medium mb-1 max-w-[80%] truncate">{file.name}</h2>
-                            <p className="text-slate-400 text-sm mb-8">{(file.size / 1024 / 1024).toFixed(2)} MB • Ready for magic</p>
+                            <h2 className="text-xl font-bold mb-1 max-w-[80%] truncate text-sky-900">{file.name}</h2>
+                            <p className="text-sky-700 font-medium text-sm mb-8">{(file.size / 1024 / 1024).toFixed(2)} MB • Ready for magic</p>
 
                             <div className="flex gap-4 w-full justify-center">
                                 <button

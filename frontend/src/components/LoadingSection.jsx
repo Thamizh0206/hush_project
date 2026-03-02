@@ -12,18 +12,18 @@ export const LoadingSection = ({ text }) => {
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                    className="w-full h-full rounded-full border-4 border-white/5 border-t-primary shadow-[0_0_20px_rgba(192,132,252,0.3)]"
+                    className="w-full h-full rounded-full border-4 border-sky-100 border-t-primary shadow-[0_0_20px_rgba(14,165,233,0.1)]"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full border-4 border-white/5 border-b-sky-400 rotate-45 animate-spin" />
+                    <div className="w-16 h-16 rounded-full border-4 border-sky-50/50 border-b-sky-500 rotate-45 animate-spin" />
                 </div>
             </div>
 
             <div className="space-y-4">
-                <h3 className="text-2xl font-semibold bg-gradient-to-r from-primary to-sky-400 bg-clip-text text-transparent">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-700 bg-clip-text text-transparent">
                     {text || "Analyzing your notes..."}
                 </h3>
-                <p className="text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
+                <p className="text-sky-800 text-lg font-medium max-w-md mx-auto leading-relaxed">
                     Our AI is crafting a beautiful summary and building your custom quiz. This usually takes 10-20 seconds.
                 </p>
 
