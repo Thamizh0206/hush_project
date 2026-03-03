@@ -4,16 +4,36 @@ import { UploadSection } from './components/UploadSection';
 import { LoadingSection } from './components/LoadingSection';
 import { SummarySection } from './components/SummarySection';
 import { QuizSection } from './components/QuizSection';
-import { AlertCircle, RotateCcw } from 'lucide-react';
+import { AuthSection } from './components/AuthSection';
+import { AlertCircle, RotateCcw, LogOut, User as UserIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
 const App = () => {
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [status, setStatus] = useState('idle'); // idle, uploading, processing, ready, error
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [docHash, setDocHash] = useState(null);
   const [loadingText, setLoadingText] = useState('Checking notes...');
+
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete axios.defaults.headers.common['Authorization'];
+    }
+  }, [token]);
+
+  const handleAuthSuccess = (newToken) => {
+    setToken(newToken);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    reset();
+  };
 
   const handleUpload = async (file) => {
     setStatus('uploading');
@@ -95,62 +115,91 @@ const App = () => {
     <div className="min-h-screen pb-24 px-6 md:px-12">
       <Header />
 
+      {token && (
+        <div className="container mx-auto mb-10 flex justify-end">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-4 bg-white/40 glass px-6 py-2 rounded-full border border-sky-200"
+          >
+            <div className="flex items-center gap-2 text-sky-900 font-bold text-sm uppercase tracking-wider">
+              <UserIcon className="w-4 h-4 text-primary" />
+              <span>Account Active</span>
+            </div>
+            <div className="w-px h-4 bg-sky-200" />
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-red-500 hover:text-red-600 font-bold text-sm uppercase tracking-wider transition-colors group"
+            >
+              <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Logout
+            </button>
+          </motion.div>
+        </div>
+      )}
+
       <main className="container mx-auto">
         <AnimatePresence mode="wait">
-          {status === 'idle' && (
-            <UploadSection key="upload" onUpload={handleUpload} />
-          )}
+          {!token ? (
+            <AuthSection key="auth" onAuthSuccess={handleAuthSuccess} />
+          ) : (
+            <>
+              {status === 'idle' && (
+                <UploadSection key="upload" onUpload={handleUpload} />
+              )}
 
-          {(status === 'uploading' || status === 'processing') && (
-            <LoadingSection key="loading" text={loadingText} />
-          )}
+              {(status === 'uploading' || status === 'processing') && (
+                <LoadingSection key="loading" text={loadingText} />
+              )}
 
-          {status === 'error' && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="max-w-2xl mx-auto p-12 glass rounded-3xl text-center border-danger/40"
-            >
-              <div className="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center mx-auto mb-6">
-                <AlertCircle className="w-8 h-8 text-danger" />
-              </div>
-              <h3 className="text-2xl font-bold text-red-100 mb-4">Something went wrong</h3>
-              <p className="text-slate-400 text-lg mb-10 leading-relaxed">{error}</p>
-              <button
-                onClick={reset}
-                className="btn secondary-btn px-8 py-3 flex items-center gap-2 mx-auto"
-              >
-                <RotateCcw className="w-4 h-4" /> Try Again
-              </button>
-            </motion.div>
-          )}
-
-          {status === 'ready' && data && (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
-            >
-              <div className="lg:col-span-4">
-                <SummarySection summary={data.summary} />
-                <button
-                  onClick={reset}
-                  className="btn secondary-btn w-full mt-6 py-4 flex items-center justify-center gap-2 bg-indigo-500/5 hover:bg-indigo-500/10"
+              {status === 'error' && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="max-w-2xl mx-auto p-12 glass rounded-3xl text-center border-danger/40"
                 >
-                  <RotateCcw className="w-4 h-4" /> Start New Lesson
-                </button>
-              </div>
-              <div className="lg:col-span-8">
-                <QuizSection
-                  questions={data.questions}
-                  topic={docHash}
-                  user_id="anonymous"
-                  onHome={reset}
-                />
-              </div>
-            </motion.div>
+                  <div className="w-16 h-16 rounded-full bg-danger/10 flex items-center justify-center mx-auto mb-6">
+                    <AlertCircle className="w-8 h-8 text-danger" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-red-100 mb-4">Something went wrong</h3>
+                  <p className="text-slate-400 text-lg mb-10 leading-relaxed">{error}</p>
+                  <button
+                    onClick={reset}
+                    className="btn secondary-btn px-8 py-3 flex items-center gap-2 mx-auto"
+                  >
+                    <RotateCcw className="w-4 h-4" /> Try Again
+                  </button>
+                </motion.div>
+              )}
+
+              {status === 'ready' && data && (
+                <motion.div
+                  key="results"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+                >
+                  <div className="lg:col-span-4">
+                    <SummarySection summary={data.summary} />
+                    <button
+                      onClick={reset}
+                      className="btn secondary-btn w-full mt-6 py-4 flex items-center justify-center gap-2 bg-indigo-500/5 hover:bg-indigo-500/10"
+                    >
+                      <RotateCcw className="w-4 h-4" /> Start New Lesson
+                    </button>
+                  </div>
+                  <div className="lg:col-span-8">
+                    <QuizSection
+                      questions={data.questions}
+                      topic={docHash}
+                      user_id="anonymous"
+                      onHome={reset}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </>
           )}
         </AnimatePresence>
       </main>
