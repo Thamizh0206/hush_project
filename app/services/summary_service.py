@@ -3,6 +3,7 @@ from app.services.chunk_service import chunk_text
 from app.services.vector_store import VectorStore
 from app.services.llm_service import client
 from app.config import settings
+from app.services import quiz_service
 import json_repair
 import json
 import re
@@ -66,7 +67,7 @@ def _parse_json(output: str) -> dict:
     raise ValueError(f"The AI generated an invalid response format: {output[:100]}...")
 
 
-def generate_rag_summary_and_quiz(content: str) -> dict:
+def generate_rag_summary_and_quiz(content: str, mastery: float = 0) -> dict:
     chunks = chunk_text(content)
     if not chunks: raise ValueError("Document is too short.")
 
@@ -86,20 +87,8 @@ def generate_rag_summary_and_quiz(content: str) -> dict:
     context_chunks = [chunks[i] for i in selected_indices if i < len(chunks)]
     context = "\n\n".join(context_chunks)
 
-    prompt = (
-        "You are an expert educational tutor. Study this text and generate a summary and quiz.\n\n"
-        "TEXT CONTENT:\n"
-        f"{context}\n\n"
-        "REQUIREMENTS:\n"
-        "1. 'summary': A concise 3-5 sentence explanation of the main points.\n"
-        "2. 'questions': A list of exactly 10 Multiple Choice Questions.\n"
-        "   Each MUST have:\n"
-        "   - 'question': the query text\n"
-        "   - 'options': A list of exactly 4 strings. EACH string MUST start with the letter for that option (e.g., 'A) ...', 'B) ...', 'C) ...', 'D) ...')\n"
-        "   - 'answer': A single letter (A, B, C, or D)\n"
-        "   - 'explanation': a brief reason why that answer is correct\n\n"
-        "IMPORTANT: Output ONLY a valid JSON object. No extra text or markdown formatting."
-    )
+    difficulty = quiz_service.determine_difficulty(mastery)
+    prompt = quiz_service.get_quiz_prompt(context, difficulty)
 
     output = _call_llm_with_fallback([{"role": "user", "content": prompt}])
     parsed = _parse_json(output)
@@ -135,4 +124,61 @@ def generate_rag_summary_and_quiz(content: str) -> dict:
                 })
 
     logger.info(f"Successfully generated summary and {len(final_data['questions'])} questions")
+    return final_data
+
+
+def generate_topic_focused_quiz(topic_name: str, document_content: str) -> dict:
+    """Generate a 5-question focused quiz for a specific topic using RAG."""
+    chunks = chunk_text(document_content)
+    if not chunks:
+        raise ValueError("Document content is empty.")
+
+    logger.info(f"Generating focused quiz for topic: {topic_name}")
+
+    # Generate embeddings and search for the specific topic
+    embeddings = generate_embeddings(chunks)
+    vector_store = VectorStore(dimension=embeddings.shape[1])
+    vector_store.add(embeddings, chunks)
+
+    query_embedding = embed_query(f"Specific information and core concepts about {topic_name}")
+    retrieved_chunks_idx = vector_store.search_indices(query_embedding, top_k=5)
+    
+    context_chunks = [chunks[i] for i in retrieved_chunks_idx if i < len(chunks)]
+    context = "\n\n".join(context_chunks)
+
+    prompt = quiz_service.get_topic_focused_prompt(topic_name)
+    # Add context to the prompt manually
+    full_prompt = f"{prompt}\n\nRELEVANT CONTEXT:\n{context}"
+
+    output = _call_llm_with_fallback([{"role": "user", "content": full_prompt}])
+    parsed = _parse_json(output)
+
+    final_data = {
+        "topic": topic_name,
+        "questions": []
+    }
+
+    raw_qs = parsed.get("questions") or parsed.get("quiz") or []
+    if isinstance(raw_qs, list):
+        for q in raw_qs[:5]: # Limit to 5
+            if isinstance(q, dict) and q.get("question") and q.get("options"):
+                ans = str(q.get("answer", "A")).strip().upper()
+                if len(ans) > 1: ans = ans[0] if ans[0] in "ABCD" else "A"
+                
+                # Letter prefixes
+                opts = []
+                letters = ["A)", "B)", "C)", "D)"]
+                for i, opt in enumerate(q["options"][:4]):
+                    opt_str = str(opt).strip()
+                    if not any(opt_str.startswith(l) for l in letters):
+                        opt_str = f"{letters[i]} {opt_str}"
+                    opts.append(opt_str)
+
+                final_data["questions"].append({
+                    "question": str(q["question"]),
+                    "options": opts,
+                    "answer": ans,
+                    "explanation": str(q.get("explanation", ""))
+                })
+
     return final_data

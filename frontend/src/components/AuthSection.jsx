@@ -22,8 +22,10 @@ export const AuthSection = ({ onAuthSuccess }) => {
 
             if (isLogin) {
                 const token = response.data.access_token;
+                const userId = response.data.user_id;
                 localStorage.setItem('token', token);
-                onAuthSuccess(token);
+                localStorage.setItem('userId', userId);
+                onAuthSuccess(token, userId);
             } else {
                 // After registration, switch to login
                 setIsLogin(true);
@@ -63,8 +65,8 @@ export const AuthSection = ({ onAuthSuccess }) => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className={`p-4 rounded-xl mb-6 text-sm text-center font-medium ${error.includes('created')
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                : 'bg-red-50 text-red-700 border border-red-100'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                            : 'bg-red-50 text-red-700 border border-red-100'
                             }`}
                     >
                         {error}

@@ -37,7 +37,7 @@ Content:
 """
 
     response = client.chat.completions.create(
-        model=settings.MODEL,
+        model=settings.MODELS[0],
         messages=[
             {"role": "system", "content": "You output strictly valid JSON."},
             {"role": "user", "content": prompt}

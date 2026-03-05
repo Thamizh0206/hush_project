@@ -23,6 +23,17 @@ class Document(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="documents")
+    topics = relationship("Topic", back_populates="document")
+
+
+class Topic(Base):
+    __tablename__ = "topics"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    document_id = Column(Integer, ForeignKey("documents.id"))
+
+    document = relationship("Document", back_populates="topics")
 
 
 class QuizAttempt(Base):

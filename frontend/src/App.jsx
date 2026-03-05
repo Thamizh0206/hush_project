@@ -5,12 +5,15 @@ import { LoadingSection } from './components/LoadingSection';
 import { SummarySection } from './components/SummarySection';
 import { QuizSection } from './components/QuizSection';
 import { AuthSection } from './components/AuthSection';
-import { AlertCircle, RotateCcw, LogOut, User as UserIcon } from 'lucide-react';
+import { Dashboard } from './components/Dashboard';
+import { AlertCircle, RotateCcw, LogOut, User as UserIcon, LayoutDashboard, FileUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
+  const [view, setView] = useState('upload'); // upload, dashboard
   const [status, setStatus] = useState('idle'); // idle, uploading, processing, ready, error
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
@@ -25,14 +28,35 @@ const App = () => {
     }
   }, [token]);
 
-  const handleAuthSuccess = (newToken) => {
+  const handleAuthSuccess = (newToken, newUserId) => {
     setToken(newToken);
+    setUserId(newUserId);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     setToken(null);
+    setUserId(null);
     reset();
+  };
+
+  const handleRetest = async (topicName) => {
+    setStatus('processing');
+    setLoadingText(`Preparing focused quiz for ${topicName}...`);
+    setView('upload');
+    setError(null);
+
+    try {
+      const response = await axios.get(`/retest/${encodeURIComponent(topicName)}`);
+      setData(response.data);
+      setDocHash(topicName);
+      setStatus('ready');
+    } catch (err) {
+      console.error("Retest error:", err);
+      setError(err.response?.data?.detail || "Failed to generate focused quiz.");
+      setStatus('error');
+    }
   };
 
   const handleUpload = async (file) => {
@@ -40,6 +64,7 @@ const App = () => {
     setError(null);
     const formData = new FormData();
     formData.append('file', file);
+    if (userId) formData.append('user_id', userId);
 
     try {
       const response = await axios.post('/upload', formData, {
@@ -116,15 +141,39 @@ const App = () => {
       <Header />
 
       {token && (
-        <div className="container mx-auto mb-10 flex justify-end">
+        <div className="container mx-auto mb-10 flex justify-end gap-4">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-2 bg-white/40 glass px-4 py-2 rounded-full border border-sky-200"
+          >
+            <button
+              onClick={() => { setView('upload'); if (status === 'ready') reset(); }}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all ${view === 'upload' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-sky-900 hover:bg-sky-100'
+                }`}
+            >
+              <FileUp className="w-3.5 h-3.5" />
+              Upload
+            </button>
+            <button
+              onClick={() => setView('dashboard')}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all ${view === 'dashboard' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-sky-900 hover:bg-sky-100'
+                }`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              Dashboard
+            </button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
             className="flex items-center gap-4 bg-white/40 glass px-6 py-2 rounded-full border border-sky-200"
           >
             <div className="flex items-center gap-2 text-sky-900 font-bold text-sm uppercase tracking-wider">
               <UserIcon className="w-4 h-4 text-primary" />
-              <span>Account Active</span>
+              <span>Active</span>
             </div>
             <div className="w-px h-4 bg-sky-200" />
             <button
@@ -142,6 +191,8 @@ const App = () => {
         <AnimatePresence mode="wait">
           {!token ? (
             <AuthSection key="auth" onAuthSuccess={handleAuthSuccess} />
+          ) : view === 'dashboard' ? (
+            <Dashboard key="dashboard" userId={userId} onRetest={handleRetest} />
           ) : (
             <>
               {status === 'idle' && (
@@ -181,7 +232,7 @@ const App = () => {
                   className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
                 >
                   <div className="lg:col-span-4">
-                    <SummarySection summary={data.summary} />
+                    {data.summary && <SummarySection summary={data.summary} />}
                     <button
                       onClick={reset}
                       className="btn secondary-btn w-full mt-6 py-4 flex items-center justify-center gap-2 bg-indigo-500/5 hover:bg-indigo-500/10"
@@ -193,7 +244,7 @@ const App = () => {
                     <QuizSection
                       questions={data.questions}
                       topic={docHash}
-                      user_id="anonymous"
+                      user_id={userId}
                       onHome={reset}
                     />
                   </div>
