@@ -80,14 +80,15 @@ def retest_topic(topic_name: str, db: Session = Depends(get_db)):
 
 @router.get("/progress")
 def get_progress(user_id: int, db: Session = Depends(get_db)):
-    # Retrieve all unique topics from the database
-    topics = db.query(models.Topic).all()
+    # Retrieve all topics belonging to documents owned by this user
+    topics = db.query(models.Topic).join(models.Document).filter(models.Document.user_id == user_id).all()
 
     progress = {}
     
-    # Calculate mastery for each topic for the specific user
+    # Calculate mastery for each unique topic name
     for topic in topics:
-        mastery = calculate_mastery(db, user_id, topic.name)
-        progress[topic.name] = mastery
+        if topic.name not in progress:
+            mastery = calculate_mastery(db, user_id, topic.name)
+            progress[topic.name] = mastery
 
     return progress

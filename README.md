@@ -2,13 +2,15 @@
 
 EduGen AI is an adaptive AI learning engine that converts study materials into structured summaries, intelligent quizzes, and mastery-based learning insights using Retrieval-Augmented Generation (RAG), LLMs, and semantic search.
 
+Developed as a modern replacement for the "Hush" project, it features a premium, dynamic frontend built with React, Vite, and Shadcn UI, paired with a robust FastAPI backend.
+
 ## 🚀 Features
 
 - **Adaptive AI Summarization**: Generate high-quality summaries from study materials.
 - **Intelligent Quiz Generation**: Automatically create quizzes to test knowledge.
 - **Topic Extraction**: Semantic search and identification of key concepts.
 - **Learning Mastery Tracking**: Monitor progress with mastery-based insights.
-- **Premium UI**: Modern Sky Blue theme for focused learning.
+- **Premium UI**: Modern Sky Blue theme with Shadcn UI for focused learning.
 - **Secure Authentication**: Built-in user profiles and progress saving.
 
 ## 🛠️ Tech Stack
